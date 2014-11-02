@@ -6,13 +6,14 @@ import System.Environment
 import System.FilePath
 import Text.Regex
 
+matches :: Regex -> [[Char]] -> [[Char]]
+matches regex strings = [s | s <- strings, not $ isNothing $ match regex s]
+
 exactMatches :: [Char] -> [[Char]] -> [[Char]]
-exactMatches query strings = [s | s <- strings, not $ isNothing $ match queryRegex s]
-  where queryRegex = stringToRegex query
+exactMatches query strings = matches (stringToRegex query) strings
 
 inexactMatches :: [Char] -> [[Char]] -> [[Char]]
-inexactMatches query strings = [s | s <- strings, not $ isNothing $ match queryRegex s]
-  where queryRegex = stringToFuzzyRegex query
+inexactMatches query strings = matches (stringToFuzzyRegex query) strings
 
 match :: Regex -> [Char] -> Maybe[String]
 match query string = matchRegex query string
