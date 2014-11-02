@@ -5,10 +5,11 @@ import System.FilePath
 import Text.Regex
 
 exactMatches :: [Char] -> [[Char]] -> [[Char]]
-exactMatches query strings = [s | s <- strings, not $ isNothing $ match query s]
+exactMatches query strings = [s | s <- strings, not $ isNothing $ match queryRegex s]
+  where queryRegex = stringToRegex query
 
-match :: [Char] -> [Char] -> Maybe[String]
-match query string = matchRegex (stringToRegex query) string
+match :: Regex -> [Char] -> Maybe[String]
+match query string = matchRegex query string
 
 notMultiline = True
 caseSensitive = False
