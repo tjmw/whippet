@@ -30,7 +30,5 @@ stringToFuzzyRegex string = mkRegexWithOpts (intercalate ".*" (splitOn "" string
 main = do
   [query, directory] <- getArgs
   files              <- getDirectoryContents directory
-  putStrLn "Exact:"
   putStr (unlines (exactMatches query files))
-  putStrLn "Inexact:"
   putStr (unlines (inexactMatches query files))
