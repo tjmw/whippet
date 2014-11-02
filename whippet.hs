@@ -4,8 +4,8 @@ import System.Environment
 import System.FilePath
 import Text.Regex
 
-matches :: [Char] -> [[Char]] -> [[Char]]
-matches query strings = [s | s <- strings, not $ isNothing $ match query s]
+exactMatches :: [Char] -> [[Char]] -> [[Char]]
+exactMatches query strings = [s | s <- strings, not $ isNothing $ match query s]
 
 match :: [Char] -> [Char] -> Maybe[String]
 match query string = matchRegex (stringToRegex query) string
@@ -19,4 +19,4 @@ stringToRegex string = mkRegexWithOpts string notMultiline caseSensitive
 main = do
   [query, directory] <- getArgs
   files              <- getDirectoryContents directory
-  putStr (unlines (matches query files))
+  putStr (unlines (exactMatches query files))
