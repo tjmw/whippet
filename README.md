@@ -12,3 +12,12 @@ e.g.
 $ whippet "fbr" .
 foobar.txt
 ```
+
+### Development
+
+Build locally into sandbox with cabal:
+
+```
+$ cabal sandbox init
+$ cabal install -j
+```
