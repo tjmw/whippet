@@ -27,8 +27,10 @@ stringToRegex string = mkRegexWithOpts string notMultiline caseSensitive
 stringToFuzzyRegex :: [Char] -> Regex
 stringToFuzzyRegex string = mkRegexWithOpts (intercalate ".*" (splitOn "" string)) notMultiline caseSensitive
 
+removeDups :: [[Char]] -> [[Char]] -> [[Char]]
+removeDups exacts inExacts = exacts ++ [s | s <- inExacts, not $ s `elem` exacts]
+
 main = do
   [query, directory] <- getArgs
   files              <- getDirectoryContents directory
-  putStr (unlines (exactMatches query files))
-  putStr (unlines (inexactMatches query files))
+  putStr (unlines (removeDups (exactMatches query files) (inexactMatches query files)))
