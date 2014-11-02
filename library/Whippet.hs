@@ -1,3 +1,5 @@
+module Whippet (run) where
+
 import Data.List
 import Data.List.Split
 import Data.Maybe
@@ -30,7 +32,7 @@ stringToFuzzyRegex string = mkRegexWithOpts (intercalate ".*" (splitOn "" string
 removeDups :: [[Char]] -> [[Char]] -> [[Char]]
 removeDups exacts inExacts = exacts ++ [s | s <- inExacts, not $ s `elem` exacts]
 
-main = do
+run = do
   [query, directory] <- getArgs
   files              <- getDirectoryContents directory
   putStr (unlines (removeDups (exactMatches query files) (inexactMatches query files)))
