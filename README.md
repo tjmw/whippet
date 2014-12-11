@@ -19,5 +19,17 @@ Build locally into sandbox with cabal:
 
 ```
 $ cabal sandbox init
-$ cabal install -j
+$ cabal install -j --enable-tests
+```
+
+Run the tests:
+
+```
+$ cabal test
+```
+
+Run the executable:
+
+```
+$ cabal run whippet <pattern> <dir>
 ```
