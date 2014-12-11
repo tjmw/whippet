@@ -1,4 +1,4 @@
-module Whippet where
+module Whippet (run, removeDups, exactMatches, inexactMatches) where
 
 import Data.List
 import Data.List.Split
