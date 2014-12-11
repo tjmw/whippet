@@ -13,8 +13,9 @@ import System.FilePath ((</>))
 import Text.Regex (Regex, matchRegex, mkRegexWithOpts)
 
 data MainOptions = MainOptions {
-  optPath   :: String,
-  optQuery  :: String
+  optPath    :: String,
+  optQuery   :: String,
+  optExclude :: String
 }
 
 instance Options MainOptions where
@@ -23,6 +24,8 @@ instance Options MainOptions where
 		    "Path to search from"
 		<*> simpleOption "query" ""
 		    "Search query"
+		<*> simpleOption "exclude" ""
+		    "Exclude paths"
 
 matches :: Regex -> [[Char]] -> [[Char]]
 matches regex strings = [s | s <- strings, not $ isNothing $ match regex s]
@@ -48,15 +51,18 @@ stringToFuzzyRegex string = mkRegexWithOpts (intercalate ".*" (splitOn "" string
 removeDups :: [[Char]] -> [[Char]] -> [[Char]]
 removeDups exacts inExacts = exacts ++ [s | s <- inExacts, not $ s `elem` exacts]
 
-getRecursiveDirectoryContents :: FilePath -> IO [FilePath]
-getRecursiveDirectoryContents topdir = do
+parseExcludes :: [Char] -> [[Char]]
+parseExcludes excludes = splitOn "," excludes
+
+getRecursiveDirectoryContents :: FilePath -> [[Char]] -> IO [FilePath]
+getRecursiveDirectoryContents topdir excludes = do
   names <- getDirectoryContents topdir
-  let properNames = filter (`notElem` [".", ".."]) names
+  let properNames = filter (`notElem` excludes) names
   paths <- forM properNames $ \name -> do
     let path = topdir </> name
     isDirectory <- doesDirectoryExist path
     if isDirectory
-      then getRecursiveDirectoryContents path
+      then getRecursiveDirectoryContents path excludes
       else return [path]
   return (concat paths)
 
@@ -64,8 +70,10 @@ run :: IO ()
 run = runCommand $ \opts args -> do
   let query = optQuery opts
   let path = optPath opts
+  let exclude = optExclude opts
   if (strNull query)
     then putStr ""
     else do
-      files <- getRecursiveDirectoryContents (path)
+      let excludes = [".", ".."] ++ (parseExcludes exclude)
+      files <- getRecursiveDirectoryContents path excludes
       putStr (unlines (removeDups (exactMatches query files) (inexactMatches query files)))
