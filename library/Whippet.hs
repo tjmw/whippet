@@ -70,10 +70,8 @@ run :: IO ()
 run = runCommand $ \opts args -> do
   let query = optQuery opts
   let path = optPath opts
-  let exclude = optExclude opts
+  let excludes = [".", ".."] ++ (parseExcludes (optExclude opts))
+  files <- getRecursiveDirectoryContents path excludes
   if (strNull query)
-    then putStr ""
-    else do
-      let excludes = [".", ".."] ++ (parseExcludes exclude)
-      files <- getRecursiveDirectoryContents path excludes
-      putStr (unlines (removeDups (exactMatches query files) (inexactMatches query files)))
+    then putStr (unlines files)
+    else putStr (unlines (removeDups (exactMatches query files) (inexactMatches query files)))
