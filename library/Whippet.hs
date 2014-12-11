@@ -32,6 +32,7 @@ stringToFuzzyRegex string = mkRegexWithOpts (intercalate ".*" (splitOn "" string
 removeDups :: [[Char]] -> [[Char]] -> [[Char]]
 removeDups exacts inExacts = exacts ++ [s | s <- inExacts, not $ s `elem` exacts]
 
+run :: IO ()
 run = do
   [query, directory] <- getArgs
   files              <- getDirectoryContents directory
