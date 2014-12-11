@@ -1,10 +1,12 @@
 module Whippet (run, removeDups, exactMatches, inexactMatches) where
 
+import Control.Monad (forM)
 import Data.List (intercalate)
 import Data.List.Split (splitOn)
 import Data.Maybe (isNothing)
-import System.Directory (getDirectoryContents)
+import System.Directory (doesDirectoryExist, getDirectoryContents)
 import System.Environment (getArgs)
+import System.FilePath ((</>))
 import Text.Regex (Regex, matchRegex, mkRegexWithOpts)
 
 matches :: Regex -> [[Char]] -> [[Char]]
@@ -31,8 +33,20 @@ stringToFuzzyRegex string = mkRegexWithOpts (intercalate ".*" (splitOn "" string
 removeDups :: [[Char]] -> [[Char]] -> [[Char]]
 removeDups exacts inExacts = exacts ++ [s | s <- inExacts, not $ s `elem` exacts]
 
+getRecursiveDirectoryContents :: FilePath -> IO [FilePath]
+getRecursiveDirectoryContents topdir = do
+  names <- getDirectoryContents topdir
+  let properNames = filter (`notElem` [".", ".."]) names
+  paths <- forM properNames $ \name -> do
+    let path = topdir </> name
+    isDirectory <- doesDirectoryExist path
+    if isDirectory
+      then getRecursiveDirectoryContents path
+      else return [path]
+  return (concat paths)
+
 run :: IO ()
 run = do
   [query, directory] <- getArgs
-  files              <- getDirectoryContents directory
+  files              <- getRecursiveDirectoryContents directory
   putStr (unlines (removeDups (exactMatches query files) (inexactMatches query files)))
