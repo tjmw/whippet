@@ -16,7 +16,9 @@ library
                        regex-compat,
                        filemanip,
                        directory,
-                       filepath
+                       filepath,
+                       options,
+                       strings
   default-language:    Haskell2010
   exposed-modules:     Whippet
   hs-source-dirs:      library
