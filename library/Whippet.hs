@@ -1,12 +1,11 @@
 module Whippet (run, removeDups, exactMatches, inexactMatches) where
 
-import Data.List
-import Data.List.Split
-import Data.Maybe
-import System.Directory
-import System.Environment
-import System.FilePath
-import Text.Regex
+import Data.List (intercalate)
+import Data.List.Split (splitOn)
+import Data.Maybe (isNothing)
+import System.Directory (getDirectoryContents)
+import System.Environment (getArgs)
+import Text.Regex (Regex, matchRegex, mkRegexWithOpts)
 
 matches :: Regex -> [[Char]] -> [[Char]]
 matches regex strings = [s | s <- strings, not $ isNothing $ match regex s]
